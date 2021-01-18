@@ -97,6 +97,7 @@ function onMessage(evt) {
 	// Preserve newlines, etc - use valid JSON - remove non-printable and other non-valid JSON chars
 	let text = cleanJSON(evt.data);
 	let results = JSON.parse(text);
+	console.log(results);
 
 	let photo = results["photo"];
 	let timestamp = results["timestamp"];
@@ -160,10 +161,4 @@ function createCamDivs() {
 	container.style = "width: " + (wMax + cellWidth) + "px; height: " + (hMax + cellHeight) + "px;";
 }
 
-loadJSON("./camera_list.json", function(response) {
-	makeCamUrls(response);
-	createCamDivs();
-	openCamConnections();
-	setupKeys();
-});
 

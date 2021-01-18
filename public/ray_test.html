@@ -7,6 +7,7 @@
 	    <meta charset="utf-8">
 		<script src="./js/libraries/three.min.js"></script>
 		<script src="./js/libraries/OrbitControls.js"></script>
+		<script src="./js/client.js"></script>
 	</head>
 
 	<body>
@@ -399,6 +400,13 @@
 			let volume;
 
 			function setup() {
+	        	loadJSON("./camera_list.json", function(response) {
+					makeCamUrls(response);
+					//createCamDivs();
+					openCamConnections();
+					//setupKeys();
+				});
+
 				scene = new THREE.Scene();
 				
 				camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);

@@ -8,9 +8,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./css/main.css">
         <script src="./js/libraries/socket.io/socket.io.js"></script>    
-        <script src="./js/networking.js"></script>
+        <script src="./js/server.js"></script>
         <script src="./js/controls.js"></script>
-        <script src="./js/images.js"></script>
+        <script src="./js/image-util.js"></script>
+        <script src="./js/client.js"></script>
     </head>
 
     <body>
@@ -22,7 +23,16 @@
             <a href="./ray_test.html"><b>ray test</b></a>
         </div>
 
-        <script src="./js/main.js"></script>
+        <script>
+        	"use strict";
+
+        	loadJSON("./camera_list.json", function(response) {
+				makeCamUrls(response);
+				createCamDivs();
+				openCamConnections();
+				setupKeys();
+			});
+        </script>
     </body>
 
 </html>

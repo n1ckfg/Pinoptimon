@@ -97,27 +97,47 @@ function onMessage(evt) {
 	// Preserve newlines, etc - use valid JSON - remove non-printable and other non-valid JSON chars
 	let text = cleanJSON(evt.data);
 	let results = JSON.parse(text);
-	console.log(results);
 
-	let photo = results["photo"];
-	let timestamp = results["timestamp"];
-	let hostname = results["hostname"];
+	if (results["photo"] !== undefined) {
+		let photo = results["photo"];
+		let timestamp = results["timestamp"];
+		let hostname = results["hostname"];
 
-	if (photo !== undefined) {
-		mainList.fileList.push(photo);
-		mainList.timestampList.push(timestamp);
-		mainList.hostnameList.push(hostname);
+		if (photo !== undefined) {
+			mainList.fileList.push(photo);
+			mainList.timestampList.push(timestamp);
+			mainList.hostnameList.push(hostname);
 
-		if (mainList.fileList.length >= activeCameras) {
-			mainList.timestampList.sort();
-			console.log(mainList.timestampList);
-			console.log(mainList.hostnameList);
-			let timestampDiff = (mainList.timestampList[mainList.timestampList.length-1] - mainList.timestampList[0]) / 1000.0;
-			console.log("*** timestamp diff: " + timestampDiff + " ms");
+			if (mainList.fileList.length >= activeCameras) {
+				mainList.timestampList.sort();
+				console.log(mainList.timestampList);
+				console.log(mainList.hostnameList);
+				let timestampDiff = (mainList.timestampList[mainList.timestampList.length-1] - mainList.timestampList[0]) / 1000.0;
+				console.log("*** timestamp diff: " + timestampDiff + " ms");
 
-			sendFileList(mainList);
-			resetList();
+				sendFileList(mainList);
+				resetList();
+			}
 		}
+	} else {
+		console.log("EEE");
+		let index = results["index"];
+
+	    if (volume !== undefined) {
+	    	for (let eye of volume.eyes) {
+	    		let isNew = true;
+	    		for (let point of eye.points) {
+	    			if (point.index === index) {
+	    				point = new Point(results["x"], results["y"], eye.highlight, index, results["hostname"], results["timestamp"]);
+	    				isNew = false;
+	    				break;
+	    			}
+	    		}
+	    		if (isNew) {
+	    			eye.points.push(new Point(results["x"], results["y"], eye.highlight, index, results["hostname"], results["timestamp"]));
+	    		}
+	    	}
+	    }
 	}
 }
 

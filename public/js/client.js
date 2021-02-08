@@ -120,7 +120,7 @@ function onMessage(evt) {
 			}
 		}
 	} else {
-		console.log("EEE");
+		//console.log("EEE");
 		let index = results["index"];
 
 	    if (volume !== undefined) {

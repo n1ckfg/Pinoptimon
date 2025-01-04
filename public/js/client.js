@@ -159,7 +159,7 @@ function createCamDivs() {
 	let newHtml = "";
 	let cellWidth = 320;
 	let cellHeight = 240;
-	let cols = 3;
+	let cols = 2;
 	let wMax = 0;
 	let hMax = 0;
 

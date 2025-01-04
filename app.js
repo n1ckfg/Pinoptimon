@@ -7,10 +7,10 @@ const fs = require("fs");
 const dotenv = require("dotenv").config();
 const debug = process.env.DEBUG === "true";
 const { exec } = require("child_process");
-const path_to_photos = "./photos";
-const path_to_opensfm = "./OpenSfM";
+const path_to_photos = "./photos/images";
+//const path_to_opensfm = "./OpenSfM";
 
-const CALIBRATION_ONLY = true;
+//const CALIBRATION_ONLY = true;
 
 let options;
 if (!debug) {
@@ -73,7 +73,7 @@ if (!debug) {
     });
 }
 
-deleteImages();
+//deleteImages();
 
 io.on("connection", function(socket) {
     console.log("A socket.io user connected.");
@@ -83,25 +83,29 @@ io.on("connection", function(socket) {
     });
 
     socket.on("download_files", function(event) {
-        if (CALIBRATION_ONLY) deleteImages();
-        let date = Date.now();
-        
-        for (let i=0; i<event.fileList.length; i++) {
-            console.log("Downloading file " + (i+1) + " of " + event.fileList.length + "...");
-            saveBase64(event.fileList[i], "./photos/images/" + event.hostnameList[i] + "_" + date + ".jpg");
-            if (i === event.fileList.length-1) {
-                console.log("DOWNLOAD COMPLETE");
-                //socket.emit("download_complete", "hello");
+        //if (CALIBRATION_ONLY) deleteImages();
 
-                doOpenSfmBatch();
-            } else {
-                console.log("...Received file " + (i+1) + " of " + event.fileList.length + ".");
+        exec("rm " + path_to_photos + "/*.jpg", function() {
+            let date = Date.now();
+            
+            for (let i=0; i<event.fileList.length; i++) {
+                console.log("Downloading file " + (i+1) + " of " + event.fileList.length + "...");
+                saveBase64(event.fileList[i], path_to_photos + "/" + event.hostnameList[i] + "_" + date + ".jpg");
+                
+                if (i === event.fileList.length-1) {
+                    console.log("DOWNLOAD COMPLETE");
+                    //socket.emit("download_complete", "hello");
+
+                    //doOpenSfmBatch();
+                    doColmap();
+                }
             }
-        }
+        });
     });
 
     socket.on("test_run", function(event) {
-        doOpenSfmBatch();
+        //doOpenSfmBatch();
+        doColmap();
     });
 });
 
@@ -117,9 +121,11 @@ ws.on("connection", function(socket) {
     };
 });
 
+/*
 function deleteImages() {
-	runCmd("rm " + path_to_photos + "/images/*.jpg");
+	runCmd("rm " + path_to_photos + "/*.jpg");
 }
+*/
 
 function saveBase64(data, filename) {
     let buffer = new Buffer(data, "base64");
@@ -166,6 +172,12 @@ function runCmd(cmd) {
     });
 }
 
+function doColmap() {
+    runCmd("colmap automatic_reconstructor --image_path " + path_to_photos + " --workspace_path " + path_to_photos);
+    runCmd("colmap model_converter --input_path " + path_to_photos + "/sparse/0 --output_path " + path_to_photos + " --output_type TXT");
+}
+
+/*
 function doOpenSfm(cmd) {
     runCmd(path_to_opensfm + "/bin/" + cmd + " " + path_to_photos);
 }
@@ -211,3 +223,4 @@ function doOpenSfmBatch() {
         }
     });
 }
+*/

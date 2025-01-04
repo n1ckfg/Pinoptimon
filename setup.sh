@@ -14,7 +14,7 @@ npm install
 
 cp env_backup .env
 
-wget https://fox-gieg.com/patches/github/n1ckfg/Pinoptimon/nodejs/Pinoptimon/OpenSfM.zip
-unzip OpenSfM.zip
-rm OpenSfM.zip
+#wget https://fox-gieg.com/patches/github/n1ckfg/Pinoptimon/nodejs/Pinoptimon/OpenSfM.zip
+#unzip OpenSfM.zip
+#rm OpenSfM.zip
 

@@ -31,20 +31,22 @@
 
 			class Eye {
 
-				constructor(_name, _position, _rotation, _width, _height, _focal, _k1, _k2) {
+				constructor(_name, _position, _rotation) { //, _width, _height, _focal, _k1, _k2) {
 					this.name = _name;
 
 					this.position = _position.multiplyScalar(CAMERA_SCALE);
 					this.rotation = _rotation;
-					this.width = _width;
-					this.height = _height;
+					//this.width = _width;
+					//this.height = _height;
 					this.planeWidth = PLANE_SCALE;
 					this.planeHeight = PLANE_SCALE;
 					
 					// TODO use these to calculate plane
+					/*
 					this.focal = _focal;
 					this.k1 = _k1;
 					this.k2 = _k2;
+					*/
 
 					this.origin;
 
@@ -220,7 +222,7 @@
 				    }
 				} 
 
-				static read(url) {
+				static readJson(url) {
 					let volume = new Volume();
 
 					let xobj = new XMLHttpRequest();
@@ -244,14 +246,76 @@
 				            	let rz = eyeEl.rotation[2];
 				         		let rotation = new THREE.Vector3(rx, ry, rz);
 
+								/*
 								let eyeElCamera = json["cameras"][eyeEl["camera"]];
 								let width = eyeElCamera.width;
 								let height = eyeElCamera.height;
 								let focal = eyeElCamera.focal;
 								let k1 = eyeElCamera.k1;
 								let k2 = eyeElCamera.k2;
+								*/
 
-								let eye = new Eye(name, position, rotation, width, height, focal, k1, k2);
+								let eye = new Eye(name, position, rotation); //, width, height, focal, k1, k2);
+								console.log("Created eye " + name);
+								volume.eyes.push(eye);	
+
+								volume.root.add(eye.cone);            	
+				            }
+
+				            scene.add(volume.root);
+		                }
+		            };
+		            xobj.send(null);  
+
+		            return volume;
+				}
+
+				static readText(url) {
+					let volume = new Volume();
+
+					let xobj = new XMLHttpRequest();
+		            xobj.overrideMimeType("text/plain");
+		            xobj.open('GET', url, true);
+		            xobj.onreadystatechange = function() {
+		                if (xobj.readyState == 4 && xobj.status == "200") {		
+		                	const allLines =  xobj.responseText.split('\n');
+		                	
+		                	const jpgLines = allLines.filter(line => {
+					            const trimmedLine = line.trim();
+					            return trimmedLine.toLowerCase().endsWith('.jpg');
+					        });
+
+				            for (let i=0; i<jpgLines.length; i++) {
+				            	let line = jpgLines[i];
+				            	let words = line.split(' ');
+				            	console.log(words);
+
+				            	let name = words[9].split("_")[0];
+				            	console.log("name: " + name);
+
+				            	let px = words[5];
+				            	let py = words[6];
+				            	let pz = words[7];
+					           	let position = new THREE.Vector3(px, py, pz);
+					           	console.log("pos: " + position.x + ", " + position.y + ", " +  + position.z);
+
+					           	let rw = words[1];
+				            	let rx = words[2];
+				            	let ry = words[3];
+				            	let rz = words[4];
+				         		let rotation = new THREE.Quaternion(rw, rx, ry, rz);
+					           	console.log("rot: " + rotation.w + ", " + rotation.x + ", " + rotation.y + ", " +  + rotation.z);
+
+								/*
+								let eyeElCamera = json["cameras"][eyeEl["camera"]];
+								let width = eyeElCamera.width;
+								let height = eyeElCamera.height;
+								let focal = eyeElCamera.focal;
+								let k1 = eyeElCamera.k1;
+								let k2 = eyeElCamera.k2;
+								*/
+
+								let eye = new Eye(name, position, rotation); //, width, height, focal, k1, k2);
 								console.log("Created eye " + name);
 								volume.eyes.push(eye);	
 
@@ -442,7 +506,7 @@
 				grid = new THREE.GridHelper(50, 50);
 				scene.add(grid);
 
-				volume = Volume.read(URL);
+				volume = Volume.readText(URL);
 
 				window.addEventListener("resize", function(event) {
 				    const width = window.innerWidth;

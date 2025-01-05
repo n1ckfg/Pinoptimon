@@ -173,8 +173,21 @@ function runCmd(cmd) {
 }
 
 function doColmap() {
-    runCmd("colmap automatic_reconstructor --image_path " + path_to_photos + " --workspace_path " + path_to_photos);
-    runCmd("colmap model_converter --input_path " + path_to_photos + "/sparse/0 --output_path " + path_to_photos + " --output_type TXT");
+    exec("colmap automatic_reconstructor --image_path " + path_to_photos + " --workspace_path " + path_to_photos, function(err, stdout, stderr) {
+        if (err) {
+            console.error(`exec error: ${err}`);
+            return;
+        }
+        console.log(`result: ${stdout}`);    
+            
+        exec("colmap model_converter --input_path " + path_to_photos + "/sparse/0 --output_path " + path_to_photos + " --output_type TXT", function(err, stdout, stderr) {
+            if (err) {
+                console.error(`exec error: ${err}`);
+                return;
+            }
+            console.log(`result: ${stdout}`);           
+        });
+    });
 }
 
 /*

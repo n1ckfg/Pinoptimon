@@ -154,6 +154,19 @@ function loadJSON(filepath, callback) {
     xobj.send(null);  
 }
 
+function loadText(filepath, callback) { 
+    // https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript  
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("text/plain");
+    xobj.open('GET', filepath, true);
+    xobj.onreadystatechange = function() {
+        if (xobj.readyState == 4 && xobj.status == "200") {
+            callback(xobj.responseText);
+        }
+    };
+    xobj.send(null);  
+}
+
 function createCamDivs() {
 	let container = document.getElementById("container");
 	let newHtml = "";

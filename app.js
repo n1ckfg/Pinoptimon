@@ -7,7 +7,7 @@ const fs = require("fs");
 const dotenv = require("dotenv").config();
 const debug = process.env.DEBUG === "true";
 const { exec } = require("child_process");
-const path_to_photos = "./photos/images";
+const path_to_photos = "./public/photos";
 //const path_to_opensfm = "./OpenSfM";
 
 //const CALIBRATION_ONLY = true;
